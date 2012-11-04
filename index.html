@@ -1,0 +1,190 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <title>WebGL Globe</title>
+    <meta charset="utf-8">
+    <style type="text/css">
+      html {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background: #000000 url(loading.gif) center center no-repeat;
+        color: #ffffff;
+        font-family: sans-serif;
+        font-size: 13px;
+        line-height: 20px;
+        height: 100%;
+      }
+
+      #info {
+        font-size: 11px;
+        position: absolute;
+        bottom: 5px;
+        background-color: rgba(0,0,0,0.8);
+        border-radius: 3px;
+        right: 10px;
+        padding: 10px;
+      }
+
+      #currentInfo {
+        width: 270px;
+        position: absolute;
+        left: 20px;
+        top: 63px;
+        background-color: rgba(0,0,0,0.2);
+        border-top: 1px solid rgba(255,255,255,0.4);
+        padding: 10px;
+      }
+
+      a {
+        color: #aaa;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .bull {
+        padding: 0 5px;
+        color: #555;
+      }
+
+      #title {
+        position: absolute;
+        top: 20px;
+        width: 270px;
+        left: 20px;
+        background-color: rgba(0,0,0,0.2);
+        border-radius: 3px;
+        font: 30px Georgia serif;
+        padding: 10px;
+      }
+
+      .sport {
+        font: 16px Georgia serif;
+        line-height: 26px;
+        height: 20px;
+        color: rgba(255, 255, 255, 0.4);
+        padding-left: 7px;
+        margin-bottom: 10px;
+        cursor: pointer;
+      }
+
+      .sport:hover, .sport.active {
+        font-size: 23px;
+        color: #fff;
+      }
+
+      #ce span {
+        display: none;
+      }
+
+      #ce {
+        width: 107px;
+        height: 55px;
+        display: block;
+        position: absolute;
+        bottom: 15px;
+        left: 20px;
+        background: url(ce.png);
+      }
+    </style>
+  </head>
+  <body>
+
+  <div id="container"></div>
+
+  <div id="info">
+    Created by Vojtěch Král <span class="bull">&bull;</span> Based on <strong><a href="http://www.chromeexperiments.com/globe">WebGL Globe</a></strong> by the Google Data Arts Team <span class="bull">&bull;</span> Data acquired from&nbsp;&nbsp;<a href="http://endomondo.com/" style="color: green; font-size: 14px;">ENDOMONDO</a>
+  </div>
+
+  <div id="currentInfo">
+    <div id="sRun" class="sport">Running</div>
+    <div id="sBike" class="sport">Cycling & Biking</div>
+    <div id="sWalk" class="sport">Walking</div>
+    <div id="sOther" class="sport">Other sports</div>
+    <div id="sAll" class="sport">&nbsp;</div>
+  </div>
+
+  <div id="title">
+    Endomondo Globe
+  </div>
+
+  <a id="ce" href="http://www.chromeexperiments.com/globe">
+    <span>This is a Chrome Experiment</span>
+  </a>
+
+  <script type="text/javascript" src="third-party/Three/ThreeWebGL.js"></script>
+  <script type="text/javascript" src="third-party/Three/ThreeExtras.js"></script>
+  <script type="text/javascript" src="third-party/Three/RequestAnimationFrame.js"></script>
+  <script type="text/javascript" src="third-party/Three/Detector.js"></script>
+  <script type="text/javascript" src="third-party/Tween.js"></script>
+  <script type="text/javascript" src="globe.js"></script>
+  <script type="text/javascript" src="jquery.js"></script>
+  <script type="text/javascript">
+    var colors = [0x00ff00, 0x0066ff, 0xe20800, 0xffdd00, 0];
+    $('.sport').each(function(i)
+    {
+      var htmlcolor = colors[i].toString(16);
+      htmlcolor = '000000'.substr(0, 6 - htmlcolor.length) + htmlcolor;
+      $(this).css('border-left', '20px solid #'+htmlcolor);
+      if (i < 4)
+      {
+        $(this).click(function()
+        {
+          displayData(i+1);
+          $('.sport').removeClass('active');
+          $(this).addClass('active');
+        });
+      }
+    });
+
+    $('#sAll').click(function()
+    {
+      displayData(false);
+      $('.sport').removeClass('active');
+    })
+
+    function displayData(label)
+    {
+      globe.resetData();
+      globe.addData(window.data, {format: 'legend', showLabel: label});
+      globe.createPoints();
+    }
+
+    if(!Detector.webgl)
+    {
+      Detector.addGetWebGLMessage();
+    } else
+    {
+      var container = document.getElementById('container');
+      var globe = DAT.Globe(document.getElementById('container'), function(label)
+      {
+        return new THREE.Color(colors[label]);
+      });
+
+      $.ajax({
+        url: 'data.json',
+        dataType: 'json',
+        data: {},
+        success: function(data)
+        {
+          window.data = data;
+          displayData(false);
+          globe.animate();
+          $('#sAll').html('Show all workouts ('+(data.length/4)+')');
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+          alert('Error downloading data: '+textStatus);
+        }
+      });
+    }
+  </script>
+
+  </body>
+
+</html>
