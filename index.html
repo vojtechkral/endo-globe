@@ -1,97 +1,188 @@
 <!DOCTYPE HTML>
 <html lang="en">
-  <head>
-    <title>Endomondo Globe</title>
-    <meta charset="utf-8">
-    <style type="text/css">
-      html {
-        height: 100%;
-      }
+<head>
+  <title>Endomondo Globe</title>
+  <meta charset="utf-8">
+  <style type="text/css">
+    html {
+      height: 100%;
+    }
 
-      body {
-        margin: 0;
-        padding: 0;
-        background: #000000 url('imgs/loading.gif') center center no-repeat;
-        color: #ffffff;
-        font-family: sans-serif;
-        font-size: 13px;
-        line-height: 20px;
-        height: 100%;
-      }
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000000 url('imgs/loading.gif') center center no-repeat;
+      color: #ffffff;
+      font-family: sans-serif;
+      font-size: 13px;
+      line-height: 20px;
+      height: 100%;
+    }
 
-      #info {
-        background-color: rgba(0,0,0,0.3);
-        font-size: 11px;
-        position: absolute;
-        bottom: 5px;
-        border-radius: 3px;
-        right: 10px;
-        padding: 3px 10px 0 10px;
-      }
+    #info {
+      background-color: rgba(0,0,0,0.3);
+      font-size: 11px;
+      position: absolute;
+      bottom: 5px;
+      border-radius: 3px;
+      right: 10px;
+      padding: 3px 10px 0 10px;
+    }
 
-      #currentInfo {
-        width: 270px;
-        position: absolute;
-        left: 20px;
-        top: 63px;
-        border-top: 1px solid rgba(255,255,255,0.4);
-        padding: 10px;
-      }
+    #currentInfo {
+      width: 270px;
+      position: absolute;
+      left: 20px;
+      top: 63px;
+      border-top: 1px solid rgba(255,255,255,0.4);
+      padding: 10px;
+    }
 
-      a {
-        color: #aaa;
-        text-decoration: none;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
+    a {
+      color: #aaa;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
 
-      .bull {
-        padding: 0 5px;
-        color: #555;
-      }
+    .bull {
+      padding: 0 5px;
+      color: #555;
+    }
 
-      #title {
-        position: absolute;
-        top: 20px;
-        min-width: 270px;
-        left: 20px;
-        border-radius: 3px;
-        font: 27px serif;
-        padding: 10px;
-      }
+    #title {
+      position: absolute;
+      top: 20px;
+      min-width: 270px;
+      left: 20px;
+      border-radius: 3px;
+      font: 27px serif;
+      padding: 10px;
+    }
 
-      .sport {
-        font: 16px sans-serif;
-        line-height: 26px;
-        height: 20px;
-        color: rgba(255, 255, 255, 0.4);
-        padding-left: 7px;
-        margin-bottom: 10px;
-        cursor: pointer;
-      }
+    .sport {
+      display: none;
+      font: 16px sans-serif;
+      line-height: 26px;
+      height: 20px;
+      color: rgba(255, 255, 255, 0.4);
+      padding-left: 7px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
 
-      .sport:hover, .sport.active {
-        font-size: 23px;
-        color: #fff;
-      }
+    .sport:hover, .sport.active {
+      font-size: 23px;
+      color: #fff;
+    }
 
-      #ce span {
-        display: none;
-      }
+    #ce span {
+      display: none;
+    }
 
-      #ce {
-        width: 107px;
-        height: 55px;
-        display: block;
-        position: absolute;
-        bottom: 15px;
-        left: 20px;
-        background: url('imgs/ce.png');
+    #ce {
+      width: 107px;
+      height: 55px;
+      display: block;
+      position: absolute;
+      bottom: 15px;
+      left: 20px;
+      background: url('imgs/ce.png');
+    }
+
+    #noWebGL {
+      visibility: hidden;
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      width: 600px;
+      margin-left: -300px;
+      padding: 3px;
+
+      color: #FF8248;
+      text-align: center;
+
+      border: 2px dotted #B32000;
+      border-radius: 5px;
+    }
+  </style>
+
+  <script type="text/javascript" src="third-party/Three/ThreeWebGL.js"></script>
+  <script type="text/javascript" src="third-party/Three/ThreeExtras.js"></script>
+  <script type="text/javascript" src="third-party/Three/RequestAnimationFrame.js"></script>
+  <script type="text/javascript" src="third-party/Three/Detector.js"></script>
+  <script type="text/javascript" src="third-party/Tween.js"></script>
+  <script type="text/javascript" src="globe.js"></script>
+  <script type="text/javascript" src="jquery.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function()
+    {
+      if(!Detector.webgl)
+      {
+        $('#noWebGL').css('visibility', 'visible');
+        $('body').css('background', '#000000');
+      } else
+      {
+        var colors = [0x00ff00, 0x0066ff, 0xe20800, 0xffdd00, 0];
+        var globe = DAT.Globe($('#container')[0], function(label)
+        {
+          return new THREE.Color(colors[label]);
+        });
+
+        $('.sport').show();
+
+        $('.sport').each(function(i)
+        {
+          var htmlcolor = colors[i].toString(16);
+          htmlcolor = '000000'.substr(0, 6 - htmlcolor.length) + htmlcolor;
+          $(this).css('border-left', '20px solid #'+htmlcolor);
+          if (i < 4)
+          {
+            $(this).click(function()
+            {
+              displayData(i+1);
+              $('.sport').removeClass('active');
+              $(this).addClass('active');
+            });
+          }
+        });
+
+        $('#sAll').click(function()
+        {
+          displayData(false);
+          $('.sport').removeClass('active');
+        })
+
+        function displayData(label)
+        {
+          globe.resetData();
+          globe.addData(window.data, {format: 'legend', showLabel: label});
+          globe.createPoints();
+        }
+
+        $.ajax({
+          url: 'data.json',
+          dataType: 'json',
+          data: {},
+          cache: false,
+          success: function(data)
+          {
+            window.data = data;
+            displayData(false);
+            globe.animate();
+            $('#sAll').html('Show all workouts ('+(data.length/4)+')');
+          },
+          error: function(jqXHR, textStatus, errorThrown)
+          {
+            alert('Error downloading data: '+textStatus);
+          }
+        });
       }
-    </style>
-  </head>
-  <body>
+    });
+  </script>
+</head>
+<body>
 
   <div id="container"></div>
 
@@ -116,77 +207,19 @@ class="bull">&bull;</span> Data acquired from&nbsp;&nbsp;<a href="http://endomon
     <span>This is a Chrome Experiment</span>
   </a>
 
-  <script type="text/javascript" src="third-party/Three/ThreeWebGL.js"></script>
-  <script type="text/javascript" src="third-party/Three/ThreeExtras.js"></script>
-  <script type="text/javascript" src="third-party/Three/RequestAnimationFrame.js"></script>
-  <script type="text/javascript" src="third-party/Three/Detector.js"></script>
-  <script type="text/javascript" src="third-party/Tween.js"></script>
-  <script type="text/javascript" src="globe.js"></script>
-  <script type="text/javascript" src="jquery.js"></script>
-  <script type="text/javascript">
-    var colors = [0x00ff00, 0x0066ff, 0xe20800, 0xffdd00, 0];
-    $('.sport').each(function(i)
-    {
-      var htmlcolor = colors[i].toString(16);
-      htmlcolor = '000000'.substr(0, 6 - htmlcolor.length) + htmlcolor;
-      $(this).css('border-left', '20px solid #'+htmlcolor);
-      if (i < 4)
-      {
-        $(this).click(function()
-        {
-          displayData(i+1);
-          $('.sport').removeClass('active');
-          $(this).addClass('active');
-        });
-      }
-    });
-
-    $('#sAll').click(function()
-    {
-      displayData(false);
-      $('.sport').removeClass('active');
-    })
-
-    function displayData(label)
-    {
-      globe.resetData();
-      globe.addData(window.data, {format: 'legend', showLabel: label});
-      globe.createPoints();
-    }
-
-    if(!Detector.webgl)
-    {
-      Detector.addGetWebGLMessage();
-    } else
-    {
-      var container = document.getElementById('container');
-      var globe = DAT.Globe(document.getElementById('container'), function(label)
-      {
-        return new THREE.Color(colors[label]);
-      });
-
-      $.ajax({
-        url: 'data.json',
-        dataType: 'json',
-        data: {},
-        cache: false,
-        success: function(data)
-        {
-          window.data = data;
-          displayData(false);
-          globe.animate();
-          $('#sAll').html('Show all workouts ('+(data.length/4)+')');
-        },
-        error: function(jqXHR, textStatus, errorThrown)
-        {
-          alert('Error downloading data: '+textStatus);
-        }
-      });
-    }
-  </script>
+  <div id="noWebGL">
+    <h2>Sorry</h2>
+    <p>Your browser either disabled usage of WebGL or it doesn't support WebGL at all.</p>
+    <p>Perhaps a couple of screenshots could be of some comfort:</p>
+    <p>
+      <a href="imgs/screenshot/endo-globe-1.png" target="_blank"><img src="imgs/endo-globe-1.png"</a>
+      <a href="imgs/screenshot/endo-globe-2.png" target="_blank"><img src="imgs/endo-globe-2.png"</a>
+      <a href="imgs/screenshot/endo-globe-3.png" target="_blank"><img src="imgs/endo-globe-3.png"</a>
+      <a href="imgs/screenshot/endo-globe-4.png" target="_blank"><img src="imgs/endo-globe-4.png"</a>
+    </p>
+  </div>
 
   <a href="https://github.com/kralyk/endo-globe" target="_blank"><img style="position: absolute; top: 0; right: 0; border: 0; z-index: 99;" src="imgs/forkme.png" alt="Fork me on GitHub"></a>
 
-  </body>
-
+</body>
 </html>
