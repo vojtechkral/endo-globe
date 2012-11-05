@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en">
   <head>
-    <title>WebGL Globe</title>
+    <title>Endomondo Globe</title>
     <meta charset="utf-8">
     <style type="text/css">
       html {
@@ -20,13 +20,13 @@
       }
 
       #info {
+        background-color: rgba(0,0,0,0.3);
         font-size: 11px;
         position: absolute;
         bottom: 5px;
-        background-color: rgba(0,0,0,0.8);
         border-radius: 3px;
         right: 10px;
-        padding: 10px;
+        padding: 3px 10px 0 10px;
       }
 
       #currentInfo {
@@ -34,7 +34,6 @@
         position: absolute;
         left: 20px;
         top: 63px;
-        background-color: rgba(0,0,0,0.2);
         border-top: 1px solid rgba(255,255,255,0.4);
         padding: 10px;
       }
@@ -55,16 +54,15 @@
       #title {
         position: absolute;
         top: 20px;
-        width: 270px;
+        min-width: 270px;
         left: 20px;
-        background-color: rgba(0,0,0,0.2);
         border-radius: 3px;
-        font: 30px Georgia serif;
+        font: 27px serif;
         padding: 10px;
       }
 
       .sport {
-        font: 16px Georgia serif;
+        font: 16px sans-serif;
         line-height: 26px;
         height: 20px;
         color: rgba(255, 255, 255, 0.4);
@@ -98,7 +96,8 @@
   <div id="container"></div>
 
   <div id="info">
-    Created by Vojtěch Král <span class="bull">&bull;</span> Based on <strong><a href="http://www.chromeexperiments.com/globe">WebGL Globe</a></strong> <span class="bull">&bull;</span> Data acquired from&nbsp;&nbsp;<a href="http://endomondo.com/" style="color: green; font-size: 14px;">ENDOMONDO</a>
+    Created by Vojtěch Král <span class="bull">&bull;</span> Based on <strong><a href="http://www.chromeexperiments.com/globe">WebGL Globe</a></strong> <span
+class="bull">&bull;</span> Data acquired from&nbsp;&nbsp;<a href="http://endomondo.com/login" style="color: green; font-size: 14px;"><img src="imgs/endomondo.png"></a>
   </div>
 
   <div id="currentInfo">
@@ -170,6 +169,7 @@
         url: 'data.json',
         dataType: 'json',
         data: {},
+        cache: false,
         success: function(data)
         {
           window.data = data;
@@ -185,7 +185,7 @@
     }
   </script>
 
-  <a href="https://github.com/kralyk/endo-globe"><img style="position: absolute; top: 0; right: 0; border: 0; z-index: 99;" src="imgs/forkme.png" alt="Fork me on GitHub"></a>
+  <a href="https://github.com/kralyk/endo-globe" target="_blank"><img style="position: absolute; top: 0; right: 0; border: 0; z-index: 99;" src="imgs/forkme.png" alt="Fork me on GitHub"></a>
 
   </body>
 
